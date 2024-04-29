@@ -15,3 +15,6 @@ class Pelicula(models.Model):
     pelResumen = models.CharField(max_length=2000)
     pelFoto= models.ImageField(upload_to=f"fotos/", null=True, blank=True)
     pelGenero= models.ForeignKey(Genero, on_delete=models.PROTECT)
+    
+    def __str__(self) -> str:
+        return self.pelTitulo
