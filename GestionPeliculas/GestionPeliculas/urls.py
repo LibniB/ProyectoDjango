@@ -28,6 +28,9 @@ urlpatterns = [
     path('listarPeliculas/', views.listarPeliculas),
     path('agregarPelicula/',views.agregarPelicula),
     path('vistaAgregarPelicula/', views.vistaAgregarPelicula),
+    path('consultarPelicula/<int:id>/',views.consultarPeliculaPorId),
+    path('actualizarPelicula/',views.actualizarPelicula),
+    path('eliminarPelicula/<int:id>',views.eliminaPelicula),
 ]
 
 if settings.DEBUG:

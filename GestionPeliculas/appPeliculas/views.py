@@ -1,4 +1,6 @@
-from django.shortcuts import render
+import os
+from django.conf import settings
+from django.shortcuts import render,redirect
 from django.db import Error
 from appPeliculas.models import Genero,Pelicula
 from django.http import HttpResponse,JsonResponse
@@ -71,3 +73,49 @@ def agregarPelicula(request):
     retorno={"mensaje":mensaje,'idPelicula':pelicula.id}
     #return JsonResponse(retorno)
     return render(request,"agregarPelicula.html",retorno)
+
+def consultarPeliculaPorId(request, id):
+    pelicula=Pelicula.objects.get(pk=id)
+    generos=Genero.objects.all() 
+    
+    retorno={"pelicula":pelicula, "generos":generos}
+    return render(request,"actualizarPelicula.html",retorno)
+
+def actualizarPelicula(request):
+    try:
+        idPelicula= request.POST['idPelicula']
+        
+        peliculaActualizar =Pelicula.objects.get(pk=idPelicula)
+        
+        peliculaActualizar.pelCodigo= request.POST['txtCodigo']
+        peliculaActualizar.pelTitulo = request.POST['txtTitulo']
+        peliculaActualizar.pelProtagonista = request.POST['txtProtagonista']
+        peliculaActualizar.pelDuracion = request.POST['txtDuracion']
+        peliculaActualizar.pelResumen = request.POST['txtResumen']
+        idGenero= int(request.POST['cbGenero'])
+        
+        genero= Genero.objects.get(pk=idGenero)
+        peliculaActualizar.pelGenero= genero
+        foto = request.FILES.get('fileFoto')
+        
+        if(foto):
+            os.remove(os.path.join(settings.MEDIA_ROOT + "/" +
+                                   str(peliculaActualizar.pelFoto)))
+            peliculaActualizar.pelFoto= foto
+        peliculaActualizar.save()    
+        mensaje= "pelicula Actualizada"
+    except Error as error:
+        mensaje=str(error)
+    retorno={"mensaje":mensaje}
+    #return JsonResponse(retorno)
+    return redirect('/listarPeliculas')
+
+def eliminaPelicula(request,id):
+    try:
+        peliculaEliminar = Pelicula.objects.get(pk=id)
+        peliculaEliminar.delete()
+        mensaje="Pelicula eliminada correctamente"
+    except Error as error:
+        mensaje= str(error)
+    #retorno ={"mensaje":mensaje}
+    return redirect('/listarPeliculas')
